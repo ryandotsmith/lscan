@@ -10,6 +10,7 @@ var s scanner.Scanner
 
 func Parse(r io.Reader) (kvmap map[string]interface{}) {
 	s.Init(r)
+	s.Whitespace = 0 // don't skip whitespace
 	tok := s.Scan()
 	kvmap = make(map[string]interface{})
 
@@ -20,7 +21,6 @@ func Parse(r io.Reader) (kvmap map[string]interface{}) {
 
 	for tok != scanner.EOF {
 		tex := s.TokenText()
-		s.Whitespace = 0 // don't skip whitespace
 		fmt.Printf("handle=%v ", tex)
 		if tex == `=` {
 			fmt.Printf("split ")
