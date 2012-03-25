@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var str = `hello=world name="ryan\"smith" distance=1.123 time="2012-03-21 10:18:20 -0700"`
+var str = `hello=world name="ryan\"smith" distance=1.123 desc="hi=there" time="2012-03-21 10:18:20 -0700"`
 
 func TestParseSimple(t *testing.T) {
 	in := strings.NewReader(str)
@@ -46,6 +46,17 @@ func TestParseTime(t *testing.T) {
 
 	actual := m["time"]
 	expected := `"2012-03-21 10:18:20 -0700"`
+	if actual != expected {
+		t.Errorf("\n e(%v) \n a(%v)", expected, actual)
+	}
+}
+
+func TestParseEqchr(t *testing.T) {
+	in := strings.NewReader(str)
+	m := Parse(in)
+
+	actual := m["desc"]
+	expected := `"hi=there"`
 	if actual != expected {
 		t.Errorf("\n e(%v) \n a(%v)", expected, actual)
 	}
