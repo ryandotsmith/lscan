@@ -7,10 +7,10 @@ import (
 
 var s scanner.Scanner
 
-func Parse(r io.Reader) map[string]string {
+func Parse(r io.Reader) map[string]interface{} {
 	s.Init(r)
 	s.Whitespace = 0 // don't skip whitespace
-	kvmap := make(map[string]string)
+	kvmap := make(map[string]interface{})
 
 	key := ""
 	val := ""
@@ -37,7 +37,7 @@ func Parse(r io.Reader) map[string]string {
 	return kvmap
 }
 
-func writeTup(m map[string]string, k string, v string) {
+func writeTup(m map[string]interface{}, k string, v string) {
 	if len(k) > 0 && len(v) > 0 {
 		m[k] = v
 	}
