@@ -7,48 +7,34 @@ import (
 
 var s scanner.Scanner
 
-func Parse(r io.Reader) (kvmap map[string]interface{}) {
+func Parse(r io.Reader) map[string]interface{} {
 	s.Init(r)
 	s.Whitespace = 0 // don't skip whitespace
-	tok := s.Scan()
-	kvmap = make(map[string]interface{})
+	kvmap := make(map[string]interface{})
 
 	key := ""
 	val := ""
-	ink := true // we always start with the key
-	inv := false
+	ink := true // if we are not in key we are in val
 
-	for tok != scanner.EOF {
-		tex := s.TokenText()
-		if tex == `=` {
+	for tok := s.Scan(); tok != scanner.EOF; tok = s.Scan() {
+		switch tex := s.TokenText(); tex {
+		case `=`:
 			ink = false
-			inv = true
-			tok = s.Scan()
-			continue
-		}
-		if tex == ` ` {
+		case ` `:
 			writeTup(kvmap, key, val)
 			key = ""
 			val = ""
 			ink = true
-			inv = false
-			tok = s.Scan()
-			continue
-		}
-		if ink {
-			key += tex
-		} else if inv {
-			val += tex
-		}
-
-		tok = s.Scan()
-		// We are done. :( Let us write whatever we have left
-		// to the map
-		if tok == scanner.EOF {
-			writeTup(kvmap, key, val)
+		default:
+			if ink {
+				key += tex
+			} else {
+				val += tex
+			}
 		}
 	}
-	return
+	writeTup(kvmap, key, val)
+	return kvmap
 }
 
 func writeTup(m map[string]interface{}, k string, v string) {
