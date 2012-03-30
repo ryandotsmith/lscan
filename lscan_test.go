@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var str = `hello=world name="ryan\"smith" distance=1.123 desc="hi=there" time="2012-03-21 10:18:20 -0700"`
+var str = `hello=world url="https://google.com?oh-hai" complex-chars="some:.-_//@" name="ryan smith's" name="ryan\"smith" distance=1.123 desc="hi=there" time="2012-03-21 10:18:20 -0700"`
 
 func TestParseSimple(t *testing.T) {
 	in := strings.NewReader(str)
@@ -16,6 +16,29 @@ func TestParseSimple(t *testing.T) {
 	if actual != expected {
 		t.Errorf("\n e(%v) \n a(%v)", expected, actual)
 	}
+}
+
+func TestParseComplex(t *testing.T) {
+	in := strings.NewReader(str)
+	m := Parse(in)
+
+	actual := m["complex-chars"]
+	expected := `"some:.-_//@"`
+	if actual != expected {
+		t.Errorf("\n e(%v) \n a(%v)", expected, actual)
+	}
+}
+
+func TestParseUrl(t *testing.T) {
+	in := strings.NewReader(str)
+	m := Parse(in)
+
+	actual := m["url"]
+	expected := `"https://google.com?oh-hai"`
+	if actual != expected {
+		t.Errorf("\n e(%v) \n a(%v)", expected, actual)
+	}
+
 }
 
 func TestParseQuoted(t *testing.T) {
